@@ -17,17 +17,19 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     MPV
+                       MPV.Error
+                       MPV.Format
+                       MPV.Event
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base >=4.8 && <4.9
+  build-depends:       base >=4.8 && <4.9, bytestring
   hs-source-dirs:      src
   default-language:    Haskell2010
   pkgconfig-depends: mpv
-  build-depends:
-     base >= 4.6
+
 executable simple
   hs-source-dirs: src
   main-is: simple.hs
   default-language: Haskell2010
   build-depends:
-     base >= 4.6, mpv-hs
+     base >= 4.6, mpv-hs, bytestring
