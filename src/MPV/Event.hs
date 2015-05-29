@@ -148,7 +148,7 @@ instance Storable Event where
                         CommandReply     -> Just <$> peekByteOff ptr (2*sizeOf (undefined :: CInt))
                         PropertyChange   -> Just <$> peekByteOff ptr (2*sizeOf (undefined :: CInt))
                         _                -> return Nothing
-      let off = (sizeOf (undefined :: CInt) + sizeOf (undefined :: Ptr CInt))
+      let off = (2*sizeOf (undefined :: CInt) + sizeOf (undefined :: Ptr CInt))
       dataPtr <- peekByteOff ptr off
       dataEvent <- case eID of
               GetPropertyReply -> Just . fromProperty <$> peekByteOff dataPtr 0
