@@ -1,5 +1,6 @@
 {-# LANGUAGE RecursiveDo #-}
 import MPV
+import MPV.Event
 import Foreign.C
 import Foreign.C.String
 import Foreign.Marshal.Array
@@ -29,6 +30,8 @@ main = do
          MPVEvent event <- mpv_wait_event ctx 10000
          x <- peek event
          print x
-         loop
+         case eventID x of
+           Shutdown -> return ()
+           _ -> loop
   loop
   mpv_terminate_destroy ctx
