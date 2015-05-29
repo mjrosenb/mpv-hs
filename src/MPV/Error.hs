@@ -27,3 +27,5 @@ pattern NotImplemented      = Error (-19)
 foreign import ccall "mpv_error_string" mpv_error_cstring :: Error -> CString
 mpvErrorString :: Error -> String
 mpvErrorString err = unsafePerformIO $ peekCAString (mpv_error_cstring err)
+instance Show Error where
+    show e = mpvErrorString e;

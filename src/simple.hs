@@ -5,6 +5,7 @@ import Foreign.C.String
 import Foreign.Marshal.Array
 import Foreign.Ptr
 import System.Environment
+import Foreign.Storable
 recCize' f all [] =  f all
 recCize' f a (h:t) = withCString h (\cur -> recCize' f (cur:a) t)
 recCize :: ([CString] -> IO a) -> [String] -> IO a
@@ -25,8 +26,9 @@ main = do
   args <- getArgs
   callWithArray (mpv_command ctx) ["loadfile", args!!0]
   let loop = do
-         event <- mpv_wait_event ctx 10000
-         print "Not Done yet"
+         MPVEvent event <- mpv_wait_event ctx 10000
+         x <- peek event
+         print x
          loop
   loop
   mpv_terminate_destroy ctx

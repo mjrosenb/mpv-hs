@@ -3,7 +3,7 @@ module MPV.Format where
 import Foreign.C
 import Data.ByteString as BS
 import Data.Int
-newtype Format    = Format CInt
+newtype Format    = Format CInt deriving Show
 pattern None      = Format 0
 pattern String    = Format 1
 pattern OSDString = Format 2
@@ -20,4 +20,4 @@ data Node = NodeString String
           | NodeInt64  Int64
           | NodeDouble Double
           | NodeList   [Node]
-          | NodeByteArray BS.ByteString
+          | NodeByteArray BS.ByteString deriving Show
