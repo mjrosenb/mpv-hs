@@ -20,6 +20,9 @@ library
                        MPV.Error
                        MPV.Format
                        MPV.Event
+                       MPV.Raw.Event
+                       MPV.Raw.FFI
+                       MPV.Raw.Format
   -- other-modules:       
   -- other-extensions:    
   build-depends:       base >=4.8 && <4.9, bytestring
