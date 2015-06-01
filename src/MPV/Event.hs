@@ -7,6 +7,7 @@ import Foreign.Storable
 import Foreign.Ptr
 import Foreign.Marshal.Array
 import qualified MPV.Format as Format
+import qualified MPV.Raw.Format as RawFormat
 import qualified MPV.Error as E
 import MPV.Raw.Event
 
@@ -24,14 +25,25 @@ data EventData =
               }
     | EClientMessage { args :: [String] }
       deriving Show
-newtype SProperty      = SProperty {fromProperty :: EventData}
+
 newtype SLogMessage    = SLogMessage {fromLogMessage :: EventData}
 newtype SEndFile       = SEndFile {fromEndFile :: EventData}
 newtype SClientMessage = SClientMessage {fromClientMessage :: EventData}
-instance Storable SProperty where
-    sizeOf _ = undefined
-    peek ptr = return undefined
-    poke ptr x = return undefined
+peekEventProperty ptr =
+    do namePtr <- peekByteOff ptr 0
+       name <- peekCAString namePtr
+       fmt <- RawFormat.Format <$> peekByteOff ptr (sizeOf (undefined :: Ptr Char))
+       let valOff = sizeOf (undefined :: Ptr Char) + alignment (undefined :: Ptr Char)
+       val <- case fmt of
+               RawFormat.None -> return Format.NodeEmpty
+               RawFormat.String -> Format.NodeString <$> (peekByteOff ptr valOff >>=  peekCAString)
+               RawFormat.Flag -> Format.NodeFlag <$> peekByteOff ptr valOff
+               RawFormat.Int64 -> Format.NodeInt64 <$> peekByteOff ptr valOff
+               RawFormat.Double -> Format.NodeDouble <$> peekByteOff ptr valOff
+               RawFormat.Node -> peekByteOff ptr valOff >>= Format.peekNode
+               -- TODO: handle aggregate types
+       return $ EProperty name fmt val
+
 instance Storable SLogMessage where
     sizeOf _ = undefined
     peek ptr = do
@@ -82,8 +94,8 @@ instance Storable Event where
       let off = (2*sizeOf (undefined :: CInt) + sizeOf (undefined :: Ptr CInt))
       dataPtr <- peekByteOff ptr off
       dataEvent <- case eID of
-              GetPropertyReply -> Just . fromProperty <$> peekByteOff dataPtr 0
-              PropertyChange   -> Just . fromProperty <$> peekByteOff dataPtr 0
+              GetPropertyReply -> Just <$> peekEventProperty dataPtr
+              PropertyChange   -> Just <$> peekEventProperty dataPtr
               LogMessage       -> Just . fromLogMessage <$> peekByteOff dataPtr 0
               ClientMessage    -> Just . fromClientMessage <$> peekByteOff dataPtr 0
               EndFile          -> Just . fromEndFile <$> peekByteOff dataPtr 0
