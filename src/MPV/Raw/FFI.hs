@@ -38,5 +38,5 @@ foreign import ccall "mpv_get_property_string" mpv_get_property_string :: MPVHan
 foreign import ccall "mpv_get_property_async" mpv_get_property_async :: MPVHandle -> CLong -> CString -> IO E.Error
 
 foreign import ccall "mpv_request_event" mpv_request_event :: MPVHandle -> Event.EventID -> CInt -> IO E.Error
-foreign import ccall "mpv_request_log_messages" mpv_request_log_messages :: MPVHandle -> CString -> IO E.Erroro
+foreign import ccall "mpv_request_log_messages" mpv_request_log_messages :: MPVHandle -> CString -> IO E.Error
 foreign import ccall "mpv_wakeup" mpv_wakeup :: MPVHandle -> IO ()
