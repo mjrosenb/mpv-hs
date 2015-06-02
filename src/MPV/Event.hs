@@ -26,7 +26,6 @@ data EventData =
     | EClientMessage { args :: [String] }
       deriving Show
 
-newtype SLogMessage    = SLogMessage {fromLogMessage :: EventData}
 newtype SEndFile       = SEndFile {fromEndFile :: EventData}
 newtype SClientMessage = SClientMessage {fromClientMessage :: EventData}
 peekEventProperty ptr =
@@ -44,17 +43,15 @@ peekEventProperty ptr =
                -- TODO: handle aggregate types
        return $ EProperty name fmt val
 
-instance Storable SLogMessage where
-    sizeOf _ = undefined
-    peek ptr = do
+peekEventLogMessage ptr = do
       prefixP <- peekByteOff ptr 0
       levelP <-  peekByteOff ptr (sizeOf (undefined :: Ptr Char))
       textP <-  peekByteOff ptr (2*sizeOf (undefined :: Ptr Char))
       prefix <- peekCAString prefixP
       level  <- peekCAString levelP
       text   <- peekCAString textP
-      return $ SLogMessage $ ELogMessage prefix level text
-    poke _ _ = return undefined
+      return $ ELogMessage prefix level text
+
 instance Storable SEndFile where
     sizeOf _ = undefined
     peek ptr = do
@@ -96,7 +93,7 @@ instance Storable Event where
       dataEvent <- case eID of
               GetPropertyReply -> Just <$> peekEventProperty dataPtr
               PropertyChange   -> Just <$> peekEventProperty dataPtr
-              LogMessage       -> Just . fromLogMessage <$> peekByteOff dataPtr 0
+              LogMessage       -> Just <$> peekEventLogMessage dataPtr
               ClientMessage    -> Just . fromClientMessage <$> peekByteOff dataPtr 0
               EndFile          -> Just . fromEndFile <$> peekByteOff dataPtr 0
               _                -> return Nothing
