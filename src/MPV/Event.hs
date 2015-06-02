@@ -26,7 +26,6 @@ data EventData =
     | EClientMessage { args :: [String] }
       deriving Show
 
-newtype SEndFile       = SEndFile {fromEndFile :: EventData}
 newtype SClientMessage = SClientMessage {fromClientMessage :: EventData}
 peekEventProperty ptr =
     do namePtr <- peekByteOff ptr 0
@@ -52,12 +51,10 @@ peekEventLogMessage ptr = do
       text   <- peekCAString textP
       return $ ELogMessage prefix level text
 
-instance Storable SEndFile where
-    sizeOf _ = undefined
-    peek ptr = do
+peekEventEndFile ptr = do
       reason <- EndFileReason <$> peekByteOff ptr 0
       error <- E.Error <$> peekByteOff ptr (sizeOf (undefined :: CInt))
-      return $ SEndFile $ EEndFile reason (Just error)
+      return $ EEndFile reason (Just error)
 instance Storable SClientMessage where
     sizeOf _ = undefined
     peek ptr = do
@@ -95,6 +92,6 @@ instance Storable Event where
               PropertyChange   -> Just <$> peekEventProperty dataPtr
               LogMessage       -> Just <$> peekEventLogMessage dataPtr
               ClientMessage    -> Just . fromClientMessage <$> peekByteOff dataPtr 0
-              EndFile          -> Just . fromEndFile <$> peekByteOff dataPtr 0
+              EndFile          -> Just <$> peekEventEndFile dataPtr
               _                -> return Nothing
       return $ Event eID err replyUserdata dataEvent
