@@ -68,6 +68,7 @@ data Event = Event {
     } deriving Show
 instance Storable Event where
     sizeOf _ = 2*sizeOf (undefined :: CInt) + sizeOf (undefined :: CLong) + sizeOf (undefined :: Ptr CInt)
+    alignment _ = alignment (undefined :: Ptr CInt)
     poke = undefined
     peek ptr = do
       eID <- EventID <$> peekByteOff ptr 0
