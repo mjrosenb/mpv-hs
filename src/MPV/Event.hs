@@ -26,7 +26,6 @@ data EventData =
     | EClientMessage { args :: [String] }
       deriving Show
 
-newtype SClientMessage = SClientMessage {fromClientMessage :: EventData}
 peekEventProperty ptr =
     do namePtr <- peekByteOff ptr 0
        name <- peekCAString namePtr
@@ -55,14 +54,12 @@ peekEventEndFile ptr = do
       reason <- EndFileReason <$> peekByteOff ptr 0
       error <- E.Error <$> peekByteOff ptr (sizeOf (undefined :: CInt))
       return $ EEndFile reason (Just error)
-instance Storable SClientMessage where
-    sizeOf _ = undefined
-    peek ptr = do
+peekEventClientMessage ptr = do
       numArgs <- peekByteOff ptr 0
       argv <- peekByteOff ptr (sizeOf (undefined :: Ptr Int)) -- N.B. This is probably aligned to pointer-sized quantities
       rawArgv <- peekArray numArgs argv
       argv <- mapM peekCString rawArgv
-      return $ SClientMessage $ EClientMessage argv
+      return $ EClientMessage argv
 data Event = Event {
       eventID :: EventID,
       error :: Maybe E.Error,
@@ -91,7 +88,7 @@ instance Storable Event where
               GetPropertyReply -> Just <$> peekEventProperty dataPtr
               PropertyChange   -> Just <$> peekEventProperty dataPtr
               LogMessage       -> Just <$> peekEventLogMessage dataPtr
-              ClientMessage    -> Just . fromClientMessage <$> peekByteOff dataPtr 0
+              ClientMessage    -> Just <$> peekEventClientMessage dataPtr
               EndFile          -> Just <$> peekEventEndFile dataPtr
               _                -> return Nothing
       return $ Event eID err replyUserdata dataEvent
