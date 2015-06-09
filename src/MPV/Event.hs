@@ -63,7 +63,7 @@ peekEventClientMessage ptr = do
 data Event = Event {
       eventID :: EventID,
       error :: Maybe E.Error,
-      replyUserdata :: Maybe Word64,
+      replyUserdata :: Maybe Int,
       event :: Maybe EventData
     } deriving Show
 instance Storable Event where

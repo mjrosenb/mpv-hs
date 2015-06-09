@@ -21,7 +21,7 @@ pattern ScriptInputDispatch = EventID 15
 pattern ClientMessage       = EventID 16
 pattern VideoReconfig       = EventID 17
 pattern AudioReconfig       = EventID 18
-pattern MetadatUpdate       = EventID 19
+pattern MetadataUpdate       = EventID 19
 pattern Seek                = EventID 20
 pattern PlaybackRestart     = EventID 21
 pattern PropertyChange      = EventID 22
@@ -49,7 +49,7 @@ instance Show EventID where
     show ClientMessage = "ClientMessage"
     show VideoReconfig = "VideoReconfig"
     show AudioReconfig = "AudioReconfig"
-    show MetadatUpdate = "MetadatUpdate"
+    show MetadataUpdate = "MetadataUpdate"
     show Seek = "Seek"
     show PlaybackRestart = "PlaybackRestart"
     show PropertyChange = "PropertyChange"

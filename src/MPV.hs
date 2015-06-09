@@ -9,6 +9,7 @@ import qualified MPV.Format as Format
 import qualified MPV.Event as Event
 import qualified MPV.Raw.FFI as FFI
 import qualified MPV.Raw.Format as RawFormat
+type MPVHandle = FFI.MPVHandle
 recCize' f all [] =  f all
 recCize' f a (h:t) = withCString h (\cur -> recCize' f (cur:a) t)
 recCize :: ([CString] -> IO a) -> [String] -> IO a
@@ -99,7 +100,9 @@ getPropertyString ctx name =
 getPropertyAsync :: FFI.MPVHandle -> Int -> String -> IO E.Error
 getPropertyAsync ctx uid name =
     withCString name (\cname -> FFI.mpv_get_property_async ctx (fromIntegral uid) cname)
-
+observeProperty :: FFI.MPVHandle -> Int -> String -> IO E.Error
+observeProperty ctx uid name =
+    withCString name (\cname -> FFI.mpv_observe_property ctx (fromIntegral uid) cname RawFormat.Node)
 --requestEvent :: FFI.MPVHandle -> MPV.Raw.Event.EventID -> Bool -> IO E.Error
 --requestLogMessages :: FFI.MPVHandle -> String -> IO E.Error
 wakeup :: FFI.MPVHandle -> IO ()
