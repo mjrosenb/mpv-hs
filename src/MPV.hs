@@ -9,6 +9,7 @@ import qualified MPV.Format as Format
 import qualified MPV.Event as Event
 import qualified MPV.Raw.FFI as FFI
 import qualified MPV.Raw.Format as RawFormat
+import Data.Functor
 type MPVHandle = FFI.MPVHandle
 recCize' f all [] =  f all
 recCize' f a (h:t) = withCString h (\cur -> recCize' f (cur:a) t)
