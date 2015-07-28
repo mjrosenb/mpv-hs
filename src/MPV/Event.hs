@@ -10,6 +10,7 @@ import qualified MPV.Format as Format
 import qualified MPV.Raw.Format as RawFormat
 import qualified MPV.Error as E
 import MPV.Raw.Event
+import Data.Functor
 
 data EventData =
       EProperty { name :: String,
