@@ -1,4 +1,4 @@
-{-# LANGUAGE RecursiveDo #-}
+{-# LANGUAGE RecursiveDo, PatternSynonyms #-}
 import MPV
 import MPV.Event
 import MPV.Raw.Event
