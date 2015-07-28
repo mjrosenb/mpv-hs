@@ -10,6 +10,7 @@ import Foreign.Marshal.Alloc
 import qualified MPV.Raw.Format as Raw
 import Data.List
 import MPV.Error as E
+import Data.Functor
 type Format = Raw.Format
 data Node = NodeEmpty
           | NodeString String
