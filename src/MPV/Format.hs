@@ -1,3 +1,4 @@
+{-# LANGUAGE PatternSynonyms #-}
 module MPV.Format where
 import Data.Int
 import qualified Data.ByteString as BS
