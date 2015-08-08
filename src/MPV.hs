@@ -105,7 +105,9 @@ observeProperty :: FFI.MPVHandle -> Int -> String -> IO E.Error
 observeProperty ctx uid name =
     withCString name (\cname -> FFI.mpv_observe_property ctx (fromIntegral uid) cname RawFormat.Node)
 --requestEvent :: FFI.MPVHandle -> MPV.Raw.Event.EventID -> Bool -> IO E.Error
---requestLogMessages :: FFI.MPVHandle -> String -> IO E.Error
+requestLogMessages :: FFI.MPVHandle -> String -> IO E.Error
+requestLogMessages ctx str =
+    withCString str (FFI.mpv_request_log_messages ctx)
 wakeup :: FFI.MPVHandle -> IO ()
 wakeup ctx = FFI.mpv_wakeup ctx
 
